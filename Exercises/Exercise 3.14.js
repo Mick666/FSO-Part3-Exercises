@@ -26,19 +26,6 @@ app.get('/api/persons', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
-    // Person.find({}).then(persons => {
-    //     const personSearch = persons.find(person => person.name === body.name)
-    // })
-
-    // if (personSearch) {
-    //     const error = {
-    //         error: "Name must be unique"
-    //     }
-    //     response.json(error)
-    //     response.status(400).end();
-    //     return;
-    // }
-
     if (!body.name) {
         const error = {
             error: "Name is missing"

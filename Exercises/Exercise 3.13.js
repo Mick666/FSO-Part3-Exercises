@@ -26,18 +26,16 @@ app.get('/api/persons', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
-    // Person.find({}).then(persons => {
-    //     const personSearch = persons.find(person => person.name === body.name)
-    // })
+    const personSearch = persons.find(person => person.name === body.name)
 
-    // if (personSearch) {
-    //     const error = {
-    //         error: "Name must be unique"
-    //     }
-    //     response.json(error)
-    //     response.status(400).end();
-    //     return;
-    // }
+    if (personSearch) {
+        const error = {
+            error: "Name must be unique"
+        }
+        response.json(error)
+        response.status(400).end();
+        return;
+    }
 
     if (!body.name) {
         const error = {
@@ -54,18 +52,18 @@ app.post('/api/persons', (request, response) => {
         response.status(400).end();
         return;
     }
-
-    const person = new Person({
-        name: body.name,
-        number: body.number,
-    })
+  
+    const person = {
+      name: body.name,
+      number: body.number,
+      id: generateId(),
+    }
 
     console.log(person)
-
-    person.save().then(savedPerson => {
-        response.json(savedPerson)
-    })
-
+  
+    persons = persons.concat(person)
+  
+    response.json(person)
 })
 
 app.get('/api/persons/:id', (request, response) => {
