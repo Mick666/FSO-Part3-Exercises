@@ -36,8 +36,21 @@ app.get('/api/persons', (request, response) => {
 })
 
 
-app.post('/api/persons', async (request, response, next) => {
+app.post('/api/persons', (request, response) => {
     const body = request.body
+    
+    // Person.find({}).then(persons => {
+    //     const personSearch = persons.find(person => person.name === body.name)
+    // })
+    
+    // if (personSearch) {
+    //     const error = {
+    //         error: "Name must be unique"
+    //     }
+    //     response.json(error)
+    //     response.status(400).end();
+    //     return;
+    // }
     
     if (!body.name) {
         const error = {
@@ -54,35 +67,12 @@ app.post('/api/persons', async (request, response, next) => {
         response.status(400).end();
         return;
     }
-
-    const peopleList = await Person.find({})
-
-    const personSearch = peopleList.find(person => person.name === body.name)
-
-    if (personSearch) { 
-        const person = new Person({
-            _id: personSearch._id,
-            name: body.name,
-            number: body.number,
-        })
-
-        Person.findByIdAndUpdate(personSearch._id, person, {new: true})
-        .then(updatedPerson => {
-            response.json(updatedPerson)
-        })
-        .catch(error => {
-            response.status(400).send({ error: 'malformatted id' });
-            next(error);
-        })
-        return;
-    }
-
-            
+    
     const person = new Person({
         name: body.name,
         number: body.number,
     })
-
+    
     console.log(person)
     
     person.save().then(savedPerson => {
