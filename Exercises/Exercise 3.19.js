@@ -22,7 +22,7 @@ app.use(Sentry.Handlers.errorHandler( {
     }
   }));
   
-app.get('/api/persons', (request, response, next) => {
+app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
         response.json(persons)
     })
@@ -52,34 +52,15 @@ app.post('/api/persons', (request, response, next) => {
         name: body.name,
         number: body.number,
     })
+
+    console.log(person)
     
     person.save()
     .then(savedPerson => {
         response.json(savedPerson)
     })
-    .catch(error => {
-        next(error)
-    })
+    .catch(error => next(error))
     
-})
-
-app.put('/api/persons/:id', (request, response, next) => {
-
-    const person = new Person({
-        _id: request.params.id,
-        name: request.body.name,
-        number: request.body.number,
-    })
-
-    Person.findByIdAndUpdate(request.params.id, person, {new: true})
-    .then(updatedPerson => {
-        response.json(updatedPerson)
-    })
-    .catch(error => {
-        console.log(error)
-        response.status(400).send({ error: 'malformatted id' });
-        next(error);
-    })
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -119,20 +100,12 @@ app.delete('/api/persons/:id', (request, response, next) => {
     })
 })
 
-app.use(Sentry.Handlers.errorHandler());
+app.get('/debug-sentry', function mainHandler(req, res) {
+    throw new Error('My first Sentry error!');
+  });
+  
 
-const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-  
-    if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    } else if (error.name === 'ValidationError') {    
-        return response.status(400).json({ error: error.message })  
-    }
-  
-    next(error)
-  }
-app.use(errorHandler)
+app.use(Sentry.Handlers.errorHandler());
 
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
